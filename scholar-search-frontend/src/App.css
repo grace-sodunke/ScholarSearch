@@ -30,7 +30,12 @@
   position:absolute;
   right: 0;
   top: 0;
-  padding: 10px;
+}
+
+.search-history-button{
+  position:absolute;
+  left: 0;
+  top: 0;
 }
 
 .pad {
