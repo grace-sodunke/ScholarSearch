@@ -14,9 +14,11 @@ export default function SearchBar(props) {
     // }, [props.mode]);
 
     const handlekeyPress = (e) => {
-        e.preventDefault()
+        // e.preventDefault()
         if (e.key === 'Enter') {
             props.setQuery(e.target.value.toLowerCase())
+            props.setPracticeMode(false)
+            // console.log("practicemode set to false due to enter keypress")
         }
     }
 
@@ -53,7 +55,7 @@ export default function SearchBar(props) {
     return (
         <div className="input-wrapper">
             <FaSearch id="search-icon" />
-            <input type="text" placeholder="Search for..." onChange={handlekeyPress} />
+            <input type="text" placeholder="Search for..." onKeyUp={handlekeyPress} />
         </div>
     )
 
