@@ -14,7 +14,13 @@
   min-width: 200px;
 }
 
-.practice-button-div{
+.practice-div{
+  width: 40%;
+  margin: auto;
+  min-width: 200px;
+}
+
+.buttons-div{
   position:relative;
   margin-top: 10px;
   width: 100%;
