@@ -1,5 +1,51 @@
-.App {
-  text-align: center;
+.App{
+  background-color: #eee;
+  height: 100vh;
+  width: 100vw;
+}
+
+.searchbar {
+  padding-top: 20vh;
+  width: 40%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  min-width: 200px;
+}
+
+.practice-div{
+  width: 40%;
+  margin: auto;
+  min-width: 200px;
+}
+
+.buttons-div{
+  position:relative;
+  margin-top: 10px;
+  width: 100%;
+  height: 50px;
+  border-radius: 5px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+.practice-button{
+  position:absolute;
+  right: 0;
+  top: 0;
+}
+
+.search-history-button{
+  position:absolute;
+  left: 0;
+  top: 0;
+}
+
+.pad {
+  padding: 10px;
 }
 
 .App-logo {
