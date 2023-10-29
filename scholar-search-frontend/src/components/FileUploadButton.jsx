@@ -11,19 +11,23 @@ function FileUploadComponent() {
       try {
         // Create a FormData object to send the file
         const formData = new FormData();
-        formData.append('pdfFile', file); // 'pdfFile' is the name of the field in your API
+        for (let i = 0; i < files.length; i++) {
+            formData.append('pdfFiles', files[i]); // Use 'pdfFiles' as the field name for multiple files
+          }
 
         // Make an HTTP POST request to your API endpoint
-        const response = await fetch('/api/uploadDocument', formData, {
+        const response = await fetch('/api/uploadDocuments', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
-            },
-        });
+            body: formData,
+          });
 
-        // Handle the response from your API (e.g., show a success message)
-        console.log('Upload successful:', response.data);
-
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Upload successful!');
+            // setSelectedFiles(files);
+        } else {
+            console.error('Upload failed:', response.error);
+        }
         // You can also update your UI or state based on the response if needed
         // setSelectedFile(file);
       } catch (error) {
@@ -31,7 +35,7 @@ function FileUploadComponent() {
         console.error('Upload failed:', error);
       }
     } else {
-      alert('Please select a valid PDF file.');
+      alert('Please select one or more valid PDF files.');
     //   setSelectedFile(null);
     }
   };
@@ -50,6 +54,7 @@ function FileUploadComponent() {
         style={{ display: 'none' }}
         onChange={handleFileSelect}
         ref={fileInputRef}
+        multiple
       />
       <Button onClick={handleUploadButtonClick} variant="outline-primary">Upload PDF</Button>
       {/* {selectedFile && <p>Selected PDF: {selectedFile.name}</p>} */}
