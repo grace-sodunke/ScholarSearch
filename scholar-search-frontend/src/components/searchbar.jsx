@@ -4,23 +4,23 @@ import {FaSearch} from 'react-icons/fa'
 import './SearchBar.css'
 
 export default function SearchBar(props) {
-    const [helptext, setHelptext] = useState('Search for ...')
+    const [helptext, setHelptext] = useState("Search for ...")
     const [query, setQuery] = useState('')
 
     useEffect(() => {
-        setHelptext('');
+        setHelptext("Search for ...");
     }, [props.mode]);
 
-    const handleSearch = (e) => {
-        e.preventDefault()
-        setQuery(e.target.value.toLowerCase())
+    const handlekeyPress = (e) => {
+        if (e.key === 'Enter') {
+            setQuery(e.target.value.toLowerCase())
+        }
     }
 
     return (
         <div className="input-wrapper">
-            <label>Search</label>
             <FaSearch id="search-icon" />
-            <input type="text" placeholder={setHelptext} onChange={handleSearch} />
+            <input type="text" placeholder={helptext} onChange={handlekeyPress} />
         </div>
     )
 

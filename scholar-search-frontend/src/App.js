@@ -7,6 +7,7 @@ function App() {
   return (
     <div className="App">
       <div className="searchbar">
+        <h2>Search</h2>
         <SearchBar mode={mode}/>
       </div>
     </div>
