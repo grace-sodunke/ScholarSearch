@@ -6,7 +6,9 @@ function App() {
   const mode = "search";
   return (
     <div className="App">
-      <SearchBar mode={mode}/>
+      <div className="searchbar">
+        <SearchBar mode={mode}/>
+      </div>
     </div>
   );
 }
