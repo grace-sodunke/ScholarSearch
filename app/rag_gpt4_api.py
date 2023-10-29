@@ -71,7 +71,7 @@ MILVUS_PORT = 19530
 MILVUS_HOST = "127.0.0.1"
 
 vector_store = Milvus(
-    collection_name="Collection2",
+    collection_name="Collection3",
     embedding_function=lc_encoder,
     connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
 )
@@ -155,7 +155,7 @@ p = f"""You are a helpful and knowledgeable agent. To achieve your goal of answe
     Query: {query}
     Context: {context}
     Your answer: """
-result = openai.Completion.create(
+result = openai.ChatCompletion.create(
     model="gpt-3.5-turbo-16k",
     prompt=p,
     max_tokens=1000,
