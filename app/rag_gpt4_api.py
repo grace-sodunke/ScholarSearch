@@ -137,18 +137,18 @@ def upload_document(file_name):
     print(f"LlamaIndex Milvus insert time for {len(chunks)} vectors: {end_time - start_time} seconds")
     print(f"type: {type(vector_store)}")
 
-question = 'What is the default AUTOINDEX in Milvus Client?'
+question = 'What is the salary per annum?'
 query = [question]
 QUERY_LENGTH = len(query[0])
 print(f"query length: {QUERY_LENGTH}")
-METADATA_URL = "https://pymilvus.readthedocs.io/en/latest/_modules/milvus/client/stub.html"
+METADATA_URL = pdf_path
 SEARCH_PARAMS = dict({
     "expr": "text = METADATA_URL",
     })
 start_time = time.time()
 docs = vector_store.similarity_search(
     question,
-    k=100,
+    k=4,
     param=SEARCH_PARAMS,
     verbose=True,
     )
@@ -162,41 +162,41 @@ print(f"Count raw retrievals: {len(docs)}")
 unique_sources = []
 unique_texts = []
 for doc in docs:
-    if doc.metadata['source'] == METADATA_URL:
+    if doc.metadata['name'] == pdf_path:
         if doc.page_content not in unique_texts:
             unique_texts.append(doc.page_content)
-            unique_sources.append(doc.metadata['source'])
+            unique_sources.append(doc.metadata)
 print(f"Count unique texts: {len(unique_texts)}")
-[ print(text) for text in unique_texts ]
-formatted_context = list(zip(unique_sources, unique_texts))
-context = ""
-for source, text in formatted_context:
-    context += f"{text} "
-print(len(context))
+#[ print(text) for text in unique_texts ]
 
-llm = "deepset/tinyroberta-squad2"
-tokenizer = AutoTokenizer.from_pretrained(llm)
-QA_input = {
-    'question': question,
-    'context': 'The quick brown fox jumped over the lazy dog'
-}
-nlp = pipeline('question-answering',
-               model=llm,
-               tokenizer=tokenizer)
-result = nlp(QA_input)
-print(f"Question: {question}")
-print(f"Answer: {result['answer']}")
+# formatted_context = list(zip(unique_sources, unique_texts))
+# context = ""
+# for source, text in formatted_context:
+#     context += f"{text} "
+# print(len(context))
+# llm = "deepset/tinyroberta-squad2"
+# tokenizer = AutoTokenizer.from_pretrained(llm)
+# QA_input = {
+#     'question': question,
+#     'context': 'The quick brown fox jumped over the lazy dog'
+# }
+# nlp = pipeline('question-answering',
+#                model=llm,
+#                tokenizer=tokenizer)
+# result = nlp(QA_input)
+# print(f"Question: {question}")
+# print(f"Answer: {result['answer']}")
 
-QA_input = {
-    'question': question,
-    'context': context,
-}
-nlp = pipeline('question-answering',
-               model=llm,
-               tokenizer=tokenizer)
-result = nlp(QA_input)
-print(f"Question: {question}")
-print(f"Answer: {result['answer']}")
+# QA_input = {
+#     'question': question,
+#     'context': context,
+# }
+# nlp = pipeline('question-answering',
+#                model=llm,
+#                tokenizer=tokenizer)
+# result = nlp(QA_input)
+# print(f"Question: {question}")
+# print(f"Answer: {result['answer']}")
 
 def query_search(query):
     return
