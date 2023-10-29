@@ -4,6 +4,7 @@ import SearchBar from './components/searchbar';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import QandA from './components/Q&A';
+import FileUploadComponent from './components/FileUploadButton';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
     <div className="App">
       <div className="searchbar">
         <h2>Search in Notes</h2>
+        <FileUploadComponent />
         <div className="pad"></div>
         <SearchBar query={query} setQuery={setQuery} setPracticeMode={setPracticeMode}/>
         <div className="pad"></div>
@@ -28,7 +30,6 @@ function App() {
                   onClick={handlePracticeClick}>
                     Practice with this topic
           </Button>
-          <Button className="search-history-button" variant="outline-primary">Search History</Button>
         </div>
         {summary && !practiceMode && (
           <div>
