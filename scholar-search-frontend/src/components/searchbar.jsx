@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function SearchBar(props) {
     // const [helptext, setHelptext] = useState("Search for ...")
-    const [query, setQuery] = useState('')
+    
 
     // useEffect(() => {
     //     setHelptext("Search for ...");
@@ -16,7 +16,7 @@ export default function SearchBar(props) {
     const handlekeyPress = (e) => {
         e.preventDefault()
         if (e.key === 'Enter') {
-            setQuery(e.target.value.toLowerCase())
+            props.setQuery(e.target.value.toLowerCase())
         }
     }
 
@@ -24,7 +24,7 @@ export default function SearchBar(props) {
         // Fetch data when searchQuery changes
         const fetchSummary = async () => {
             try {
-              const requestBody = { query };
+              const requestBody = { query: props.query };
           
               // Make a POST request to your API endpoint with the request body
               const response = await fetch('/api/summaries', {
@@ -47,7 +47,7 @@ export default function SearchBar(props) {
           };
         
         fetchSummary();
-      }, [query]);
+      }, [props.query]);
 
     
     return (
