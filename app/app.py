@@ -21,8 +21,8 @@ def upload_document():
     else:
         incoming_data = request.json
         print("Received data:", incoming_data)
-        rag_gpt4_api.upload_document(incoming_data['file name'])
-    return
+        rag_gpt4_api.upload_document(incoming_data['file-name'])
+    return jsonify({"success": True})
 
 @app.after_request
 def add_CORS_headers(response):
@@ -33,8 +33,10 @@ def add_CORS_headers(response):
     return response
 
 @app.route('/api/querySearch', methods=['POST'])
-def querySearch():
-    return
+def query_search():
+    incoming_data = request.json
+    
+    return data.to_json
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
