@@ -10,5 +10,6 @@ sentence-transformers
 gdown
 langchain
 openai
-python-dotenv
 requests
+python-dotenv
+pypdf
