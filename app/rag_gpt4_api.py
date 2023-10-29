@@ -15,7 +15,7 @@ from pymilvus import (
     connections, utility
 )
 from llama_index.embeddings import HuggingFaceEmbedding
-from llama_index.vector_stores import MilvusVectorStore
+from langchain.vectorstores import Milvus
 # from llama_index.text_splitter import SentenceSplitter
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import PyPDFLoader
@@ -84,19 +84,13 @@ print(f"type: list of {type(chunks[0])}, len: {len(chunks)}")
 print()
 print("Looking at a sample chunk...")
 print(chunks[0].metadata)
-print(chunks[0].page_content[:100])
-for doc in chunks:
-    new_url = doc.metadata["source"]
-    new_url = new_url.replace("rtdocs", "https:/")
-    doc.metadata.update({"source": new_url})
-print(chunks[0].metadata)
-print(chunks[0].page_content[:500])
+print(chunks[0].page_content)
 
 MILVUS_PORT = 19530
 MILVUS_HOST = "127.0.0.1"
 print("Start inserting entities")
 start_time = time.time()
-vector_store = MilvusVectorStore.from_documents(
+vector_store = Milvus.from_documents(
     chunks,
     embedding=lc_encoder,
     connection_args={"host": MILVUS_HOST,
