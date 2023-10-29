@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import app.rag_gpt4_backend as rag_gpt4_backend
+import app.rag_gpt4_app as rag_gpt4_app
 import json
 from flask_cors import CORS
 import pandas as pd
@@ -14,12 +14,12 @@ def index():
     return 'Welcome to the ScholarSearch backend'
 
 
-@app.route('/api/uploadDocument', methods=['POST', 'OPTIONS'])
+@app.route('/api/uploadDocument', methods=['POST'])
 def upload_document():
     try:
         file_paths = []
         file_names = []
-        uploaded_files = request.files.getlist('pdfFiles')
+        uploaded_files = request.json.get("pdfFiles")
         if not uploaded_files:
             return Flask.jsonify({'error': 'No files uploaded'})
 
@@ -31,7 +31,7 @@ def upload_document():
                 file_paths.append(file_path)
                 file_names.append(file.filename)
 
-        rag_gpt4_backend.upload_document(file_names, file_paths)
+        rag_gpt4_app.upload_document(file_names, file_paths)
         return jsonify({'message': f'{len(uploaded_files)} file(s) uploaded successfully'})
 
     except Exception as e:
@@ -52,9 +52,9 @@ def add_CORS_headers(response):
 @app.route('/api/querySearch', methods=['POST'])
 def query_search():
     incoming_data = request.json
-    summary = rag_gpt4_backend.query_search(incoming_data["query"])
+    summary = rag_gpt4_app.query_search(incoming_data["query"])
     return json.dumps(summary)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True)

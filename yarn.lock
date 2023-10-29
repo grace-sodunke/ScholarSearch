@@ -109,6 +109,11 @@ dom-helpers@^5.0.1, dom-helpers@^5.2.0, dom-helpers@^5.2.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
+flask@^0.2.10:
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/flask/-/flask-0.2.10.tgz#f5f5a42cfd58a309e37c67c0a39617a819e5e1b7"
+  integrity sha512-Zy69KIuFsoX0o2W5uDHHk1GHMwRT8QT0AboPQY7b1soCfJ2pfwKxHF2AGVwJmDUjzawgOavoY/UsXnZ7fk3lVQ==
+
 invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.4.tgz#610f3c92c9359ce1db616e538008d23ff35158e6"

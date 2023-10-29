@@ -14,15 +14,13 @@ function FileUploadComponent() {
         formData.append('pdfFile', file); // 'pdfFile' is the name of the field in your API
 
         // Make an HTTP POST request to your API endpoint
-        const response = await fetch('/api/uploadDocument', formData, {
+        const response = await fetch('/api/uploadDocument', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'multipart/form-data', // Use multipart/form-data for file uploads
-            },
+            body: formData, // Set the FormData object as the HTTP request body
         });
 
         // Handle the response from your API (e.g., show a success message)
-        console.log('Upload successful:', response.data);
+        console.log(response);
 
         // You can also update your UI or state based on the response if needed
         // setSelectedFile(file);

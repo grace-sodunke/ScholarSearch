@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import SearchBar from './components/searchbar';
+import Summary from './components/summary';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import QandA from './components/Q&A';
@@ -8,7 +9,7 @@ import FileUploadComponent from './components/FileUploadButton';
 
 
 function App() {
-  const [summary, setSummary] = useState('HI this is sample summary');
+  const [summary, setSummary] = useState('');
   const [practiceMode, setPracticeMode] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -34,8 +35,7 @@ function App() {
         {summary && !practiceMode && (
           <div>
             <div className="pad"></div>
-            <h2>Summary</h2>
-            <p>{summary}</p>
+            <Summary summary={summary} setSummary={setSummary} query={query} />
           </div>
         )}
       </div>
