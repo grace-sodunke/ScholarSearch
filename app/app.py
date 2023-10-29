@@ -35,8 +35,8 @@ def add_CORS_headers(response):
 @app.route('/api/querySearch', methods=['POST'])
 def query_search():
     incoming_data = request.json
-    
-    return data.to_json
+    summary = rag_gpt4_api.query_search(incoming_data["query"])
+    return json.dumps(summary)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

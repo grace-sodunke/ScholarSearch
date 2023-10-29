@@ -1,8 +1,8 @@
 import time
 import os
-import subprocess
 import pandas as pd
 import numpy as np
+import openai
 import torch
 from torch.nn import functional as F
 from sentence_transformers import SentenceTransformer
@@ -40,6 +40,7 @@ torch.manual_seed(RANDOM_SEED)
 DEVICE = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 print(f"device: {DEVICE}")
 
+openai.api_key = os.getenv("OPENAI_API_KEY")
 hub_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 login(token=hub_token)
 model_name = "BAAI/bge-base-en-v1.5"
@@ -63,45 +64,18 @@ lc_encoder = HuggingFaceEmbeddings(
 )
 type(lc_encoder)
 
-pdf_path = "/Users/gracesodunke/Documents/Google STEP/LONDON Grace Ayomide Sodunke_Offer Letter_463737234_1688056780235.pdf"
-loader = PyPDFLoader(pdf_path)
-pages = loader.load()
-chunk_size = MAX_SEQ_LENGTH - HF_EOS_TOKEN_LENGTH
-chunk_overlap = np.round(chunk_size * 0.10, 0)
-start_time = time.time()
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size = chunk_size,
-    chunk_overlap = chunk_overlap,
-    length_function = len,
-)
-chunks = text_splitter.create_documents(
-    [p.page_content for  p in pages], 
-    metadatas=[{"name": pdf_path} for p in pages])
-end_time = time.time()
-print(f"chunking time: {end_time - start_time}")
-print(f"type: {type(chunks)}, len: {len(chunks)}, type: {type(chunks[0])}")
-print(f"type: list of {type(chunks[0])}, len: {len(chunks)}") 
-
-print()
-print("Looking at a sample chunk...")
-print(chunks[0].metadata)
-print(chunks[0].page_content)
+file_path1 = "/Users/gracesodunke/Documents/Google STEP/LONDON Grace Ayomide Sodunke_Offer Letter_463737234_1688056780235.pdf"
+file_path2 = "/Users/gracesodunke/Documents/Google STEP/Grace Ayomide Sodunke_Offer Letter_463737234_1683043578334_20230509-1541.pdf" 
 
 MILVUS_PORT = 19530
 MILVUS_HOST = "127.0.0.1"
-print("Start inserting entities")
-start_time = time.time()
-vector_store = Milvus.from_documents(
-    chunks,
-    embedding=lc_encoder,
-    connection_args={"host": MILVUS_HOST,
-                     "port": MILVUS_PORT},
-)
-end_time = time.time()
-print(f"LlamaIndex Milvus insert time for {len(chunks)} vectors: {end_time - start_time} seconds")
-print(f"type: {type(vector_store)}")
 
-def upload_document(file_name):
+vector_store = Milvus(
+    embedding_function=lc_encoder,
+    connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
+)
+
+def upload_document(pdf_path):
     loader = PyPDFLoader(pdf_path)
     pages = loader.load()
     chunk_size = MAX_SEQ_LENGTH - HF_EOS_TOKEN_LENGTH
@@ -127,29 +101,27 @@ def upload_document(file_name):
 
     print("Start inserting entities")
     start_time = time.time()
-    vector_store = Milvus.from_documents(
-        chunks,
-        embedding=lc_encoder,
-        connection_args={"host": MILVUS_HOST,
-                        "port": MILVUS_PORT},
-    )
+    vector_store.add_documents(chunks)
     end_time = time.time()
     print(f"LlamaIndex Milvus insert time for {len(chunks)} vectors: {end_time - start_time} seconds")
     print(f"type: {type(vector_store)}")
+
+upload_document(file_path1)
+upload_document(file_path2)
 
 question = 'What is the salary per annum?'
 query = [question]
 QUERY_LENGTH = len(query[0])
 print(f"query length: {QUERY_LENGTH}")
-METADATA_URL = pdf_path
-SEARCH_PARAMS = dict({
-    "expr": "text = METADATA_URL",
-    })
+# METADATA_URL = ""
+# SEARCH_PARAMS = dict({
+#     "expr": "text = METADATA_URL",
+#     })
 start_time = time.time()
 docs = vector_store.similarity_search(
     question,
     k=4,
-    param=SEARCH_PARAMS,
+    param=None,
     verbose=True,
     )
 end_time = time.time()
@@ -162,41 +134,80 @@ print(f"Count raw retrievals: {len(docs)}")
 unique_sources = []
 unique_texts = []
 for doc in docs:
-    if doc.metadata['name'] == pdf_path:
-        if doc.page_content not in unique_texts:
-            unique_texts.append(doc.page_content)
-            unique_sources.append(doc.metadata)
+    if doc.page_content not in unique_texts:
+        unique_texts.append(doc.page_content)
+        unique_sources.append(doc.metadata)
 print(f"Count unique texts: {len(unique_texts)}")
 #[ print(text) for text in unique_texts ]
 
-# formatted_context = list(zip(unique_sources, unique_texts))
-# context = ""
-# for source, text in formatted_context:
-#     context += f"{text} "
-# print(len(context))
-# llm = "deepset/tinyroberta-squad2"
-# tokenizer = AutoTokenizer.from_pretrained(llm)
-# QA_input = {
-#     'question': question,
-#     'context': 'The quick brown fox jumped over the lazy dog'
-# }
-# nlp = pipeline('question-answering',
-#                model=llm,
-#                tokenizer=tokenizer)
-# result = nlp(QA_input)
-# print(f"Question: {question}")
-# print(f"Answer: {result['answer']}")
+formatted_context = list(zip(unique_sources, unique_texts))
+context = ""
+for source, text in formatted_context:
+    context += f"{text} "
+print(len(context))
 
-# QA_input = {
-#     'question': question,
-#     'context': context,
-# }
-# nlp = pipeline('question-answering',
-#                model=llm,
-#                tokenizer=tokenizer)
-# result = nlp(QA_input)
-# print(f"Question: {question}")
-# print(f"Answer: {result['answer']}")
+p = f"""You are a helpful and knowledgeable agent. To achieve your goal of answering a query
+    correctly, you have access to contextual information. You are given a query and must produce a concise summary
+    of maximum 400 words that uses all of the relevant information given to you in the context.
 
-def query_search(query):
-    return
+    Query: {query}
+    Context: {context}
+    Your answer: """
+result = openai.Completion.create(
+    model="text-ada-001",
+    prompt=p,
+    max_tokens=1000,
+    temperature=0
+    )
+answer = result['choices'][0]['text'].lstrip('\n')
+
+print(answer)
+
+def query_search(question):
+    query = [question]
+    QUERY_LENGTH = len(query[0])
+    print(f"query length: {QUERY_LENGTH}")
+    start_time = time.time()
+    docs = vector_store.similarity_search(
+        question,
+        k=4,
+        param=None,
+        verbose=True,
+        )
+    end_time = time.time()
+    print(f"Milvus query time: {end_time - start_time}")
+    for d in docs:
+        print(d.metadata)
+        print(d.page_content[:100])
+    print(f"Count raw retrievals: {len(docs)}")
+
+    unique_sources = []
+    unique_texts = []
+    for doc in docs:
+        if doc.page_content not in unique_texts:
+            unique_texts.append(doc.page_content)
+            unique_sources.append(doc.metadata)
+    print(f"Count unique texts: {len(unique_texts)}")
+    formatted_context = list(zip(unique_sources, unique_texts))
+    context = ""
+    for source, text in formatted_context:
+        context += f"{text} "
+    print(len(context))
+
+    p = f"""You are a helpful and knowledgeable agent. To achieve your goal of answering a query
+        correctly, you have access to contextual information. You are given a query and must produce a concise summary
+        of maximum 400 words that uses all of the relevant information given to you in the context.
+
+        Query: {query}
+        Context: {context}
+        Your answer: """
+    result = openai.Completion.create(
+        model="text-ada-001",
+        prompt=p,
+        max_tokens=1000,
+        temperature=0
+        )
+    answer = result['choices'][0]['text'].lstrip('\n')
+
+    print(answer)
+    return {"summary": answer}
