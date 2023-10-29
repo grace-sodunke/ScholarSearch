@@ -71,11 +71,12 @@ MILVUS_PORT = 19530
 MILVUS_HOST = "127.0.0.1"
 
 vector_store = Milvus(
+    collection_name="Collection2",
     embedding_function=lc_encoder,
     connection_args={"host": MILVUS_HOST, "port": MILVUS_PORT},
 )
 
-def upload_document(pdf_path):
+def upload_document(pdf_path: str):
     loader = PyPDFLoader(pdf_path)
     pages = loader.load()
     chunk_size = MAX_SEQ_LENGTH - HF_EOS_TOKEN_LENGTH
@@ -148,13 +149,14 @@ print(len(context))
 
 p = f"""You are a helpful and knowledgeable agent. To achieve your goal of answering a query
     correctly, you have access to contextual information. You are given a query and must produce a concise summary
-    of maximum 400 words that uses all of the relevant information given to you in the context.
+    of maximum 500 words that uses the relevant information from the context, given in a grammatically correct and
+    readable format.
 
     Query: {query}
     Context: {context}
     Your answer: """
 result = openai.Completion.create(
-    model="text-ada-001",
+    model="gpt-3.5-turbo-16k",
     prompt=p,
     max_tokens=1000,
     temperature=0
@@ -195,14 +197,15 @@ def query_search(question):
     print(len(context))
 
     p = f"""You are a helpful and knowledgeable agent. To achieve your goal of answering a query
-        correctly, you have access to contextual information. You are given a query and must produce a concise summary
-        of maximum 400 words that uses all of the relevant information given to you in the context.
+    correctly, you have access to contextual information. You are given a query and must produce a concise summary
+    of maximum 500 words that uses the relevant information from the context, given in a grammatically correct and
+    readable format.
 
-        Query: {query}
-        Context: {context}
-        Your answer: """
+    Query: {query}
+    Context: {context}
+    Your answer: """
     result = openai.Completion.create(
-        model="text-ada-001",
+        model="gpt-3.5-turbo-16k",
         prompt=p,
         max_tokens=1000,
         temperature=0
@@ -211,3 +214,5 @@ def query_search(question):
 
     print(answer)
     return {"summary": answer}
+
+#def practice_topic
